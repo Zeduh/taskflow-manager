@@ -1,14 +1,35 @@
 'use server';
 
 import { RegisterFormData } from './types';
-import { AuthService } from '@/app/services/auth.service';
-import { redirect } from 'next/navigation';
 
 export async function registerUser(data: RegisterFormData) {
   try {
-    await AuthService.register(data);
-    redirect('/auth/login');
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return { 
+        success: false, 
+        error: error.message || 'Erro ao registrar usuário' 
+      };
+    }
+
+    return { success: true };
   } catch (error) {
-    throw new Error('Falha no registro');
+    console.error('Erro no registro:', error);
+    return { 
+      success: false, 
+      error: 'Falha ao registrar usuário. Tente novamente.' 
+    };
   }
 }

@@ -21,8 +21,9 @@ export class UsersController {
   // Rota pública para criar usuário (registro)
   @Post()
   @HttpCode(201)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const { password, ...user } = await this.usersService.create(createUserDto);
+    return user; // Retorna usuário sem a senha
   }
 
   // Rotas protegidas
