@@ -12,7 +12,7 @@ export class UsersService {
     console.log('createUserDto', createUserDto);
     const existingUser = await this.usersRepository.findByEmail(createUserDto.email);
     if (existingUser) {
-      throw new ConflictException('Email already exists');
+      throw new ConflictException('Falha no registro de Usuário');
     }
     
     const user = this.usersRepository.create(createUserDto);
