@@ -1,17 +1,25 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+interface FetchOptions extends RequestInit {
+  token?: string;
+}
+
 export class ApiService {
-  static async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  static async fetch<T>(endpoint: string, options?: FetchOptions): Promise<T> {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(options?.token && { Authorization: `Bearer ${options.token}` }),
+      ...options?.headers,
+    };
+
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
+      headers,
     });
 
     if (!response.ok) {
-      throw new Error('API request failed');
+      const error = await response.json();
+      throw new Error(error.message || 'API request failed');
     }
 
     return response.json();
