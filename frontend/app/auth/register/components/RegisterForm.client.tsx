@@ -11,7 +11,8 @@ import {
   Alert, 
   Box, 
   IconButton,
-  InputAdornment 
+  InputAdornment,
+  Snackbar
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { registerSchema } from '@/app/validations/auth.validation';
@@ -27,6 +28,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false); // novo estado
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema)
@@ -39,10 +41,18 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
     setError('');
     
     try {
-      await onSubmit(data);
-      router.push('/auth/login');
+      const response = await onSubmit(data);
+      if (response.success) {
+        setSuccess(true); // ativa o feedback de sucesso
+        // Aguarda 2 segundos antes de redirecionar
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 2000);
+      } else {
+        setError(response.error || 'Erro ao registrar usuário');
+      }
     } catch (err) {
-      setError('Falha no registro. Tente novamente.');
+      setError('Erro ao registrar usuário. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -107,11 +117,28 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
         {...register('confirmPassword')}
       />
 
-      {error && (
+      <Snackbar 
+        open={success} 
+        autoHideDuration={2000} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          severity="success" 
+          sx={{ width: '100%' }}
+        >
+          Conta criada com sucesso! Redirecionando para o login...
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={error}
+        autoHideDuration={2000}
+        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+      >
         <Alert severity="error" sx={{ borderRadius: 1 }}>
           {error}
         </Alert>
-      )}
+      </Snackbar>
 
       <Button
         type="submit"
