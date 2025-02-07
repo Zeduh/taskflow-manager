@@ -1,7 +1,17 @@
-// frontend/app/page.tsx
+// app/page.tsx (Server Component - Home Page)
+import { redirect } from 'next/navigation';
+import { Button } from '@mui/material';
 import styles from './page.module.css';
+import { HomeActions } from './components/HomeActions.client';
 
 export default function Home() {
+  // Server-side auth check
+  const isAuthenticated = false; // Implementar verificação do token
+  
+  if (isAuthenticated) {
+    redirect('/dashboard');
+  }
+
   return (
     <div className={styles.container}>
       <section className={styles.main}>
@@ -11,16 +21,7 @@ export default function Home() {
         <p className={styles.description}>
           Gerencie suas tarefas de forma simples e eficiente
         </p>
-        <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3>Minhas Tarefas</h3>
-            <p>Visualize e gerencie suas tarefas pendentes</p>
-          </div>
-          <div className={styles.card}>
-            <h3>Nova Tarefa</h3>
-            <p>Crie uma nova tarefa rapidamente</p>
-          </div>
-        </div>
+        <HomeActions />
       </section>
     </div>
   );
