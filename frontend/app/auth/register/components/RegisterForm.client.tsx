@@ -55,7 +55,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
     >
       <TextField
-        label="Nome completo"
+        label="Nome do usuário"
         variant="outlined"
         fullWidth
         error={!!errors.name}
