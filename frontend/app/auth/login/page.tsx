@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/auth.context';
 import Link from 'next/link';
 import {
-  Container,
   Box,
   TextField,
   Button,
@@ -44,115 +43,116 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ 
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      py: 4,
-    }}>
-      <Paper
-        elevation={3}
+    <Paper
+      elevation={3}
+      sx={{
+        width: '100%',
+        maxWidth: 'sm',
+        mx: 'auto',
+        p: isMobile ? 3 : 4,
+        borderRadius: 2,
+      }}
+    >
+      <Box
         sx={{
-          width: '100%',
-          p: isMobile ? 3 : 4,
-          borderRadius: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3,
         }}
       >
-        <Box
-          sx={{
+        <Typography
+          component="h1"
+          variant={isMobile ? 'h5' : 'h4'}
+          sx={{ fontWeight: 700 }}
+        >
+          Task Manager
+        </Typography>
+
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ mb: 2, textAlign: 'center' }}
+        >
+          Faça login para acessar sua conta
+        </Typography>
+
+        {error && (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              width: '100%',
+              borderRadius: 1,
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <Box 
+          component="form" 
+          onSubmit={handleSubmit} 
+          sx={{ 
+            width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
             gap: 2,
           }}
         >
-          <Typography
-            component="h1"
-            variant={isMobile ? 'h5' : 'h4'}
-            sx={{ mb: 2, fontWeight: 'bold' }}
-          >
-            Bem-vindo de volta
-          </Typography>
-
-          {error && (
-            <Alert 
-              severity="error" 
-              sx={{ 
-                width: '100%',
-                borderRadius: 1,
-              }}
-            >
-              {error}
-            </Alert>
-          )}
-
-          <Box 
-            component="form" 
-            onSubmit={handleSubmit} 
+          <TextField
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            required
+            fullWidth
+            name="password"
+            label="Senha"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            disabled={loading}
             sx={{ 
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
+              py: 1.5,
+              mt: 1,
             }}
           >
-            <TextField
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              sx={{ mb: 1 }}
-            />
-            <TextField
-              required
-              fullWidth
-              name="password"
-              label="Senha"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
+          
+          <Link 
+            href="/auth/register" 
+            style={{ 
+              textDecoration: 'none',
+              width: '100%',
+            }}
+          >
+            <Button 
+              fullWidth 
+              variant="outlined"
               size="large"
-              disabled={loading}
-              sx={{ 
-                py: 1.5,
-                mb: 2,
-              }}
+              sx={{ py: 1.5 }}
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              Criar uma conta
             </Button>
-            
-            <Link 
-              href="/auth/register" 
-              style={{ 
-                textDecoration: 'none',
-                width: '100%',
-              }}
-            >
-              <Button 
-                fullWidth 
-                variant="outlined"
-                size="large"
-                sx={{ py: 1.5 }}
-              >
-                Criar uma conta
-              </Button>
-            </Link>
-          </Box>
+          </Link>
         </Box>
-      </Paper>
-    </Container>
+      </Box>
+    </Paper>
   );
 }
