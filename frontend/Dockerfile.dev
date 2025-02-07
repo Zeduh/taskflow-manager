@@ -1,0 +1,29 @@
+# frontend/Dockerfile.dev
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Limpar workspace
+RUN rm -rf ./* || true
+
+# Instalar dependências primeiro
+COPY package*.json ./
+COPY next.config.* ./
+COPY tsconfig.json ./
+
+# Instalar dependências
+RUN npm install --legacy-peer-deps
+
+# Copiar o resto dos arquivos
+COPY . .
+
+# Definir variáveis de ambiente
+ENV NODE_ENV=development
+ENV WATCHPACK_POLLING=true
+ENV CHOKIDAR_USEPOLLING=true
+
+# Expor porta
+EXPOSE 3000
+
+# Comando para desenvolvimento
+CMD ["npm", "run", "dev"]
