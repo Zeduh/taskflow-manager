@@ -1,4 +1,5 @@
-// app/layout.tsx
+'use client';
+
 import { Providers } from "./providers/Providers.client";
 import { Geist } from "next/font/google";
 import "./globals.css";
@@ -14,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={geist.className}>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={geist.className} suppressHydrationWarning>
         <Providers>
           {children}
         </Providers>

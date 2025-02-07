@@ -13,17 +13,21 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<AuthResponse['user'] | null>(null);
 
   useEffect(() => {
-    // Verificar token existente ao carregar
+    // Inicialização do auth state
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
+    
     if (token && savedUser) {
       setIsAuthenticated(true);
       setUser(JSON.parse(savedUser));
     }
+    
+    setIsInitialized(true);
   }, []);
 
   const login = (token: string, userData: AuthResponse['user']) => {
@@ -39,6 +43,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(false);
     setUser(null);
   };
+
+  // Não renderiza nada até a inicialização estar completa
+  if (!isInitialized) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
