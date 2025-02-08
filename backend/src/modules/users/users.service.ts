@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Logger } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,16 +7,30 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
+  private readonly logger = new Logger(UsersService.name, {
+    timestamp: true,
+  });
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    console.log('createUserDto', createUserDto);
+    this.logger.log(`Verificando existência do email: ${createUserDto.email}`);
+    
     const existingUser = await this.usersRepository.findByEmail(createUserDto.email);
     if (existingUser) {
+      this.logger.warn(`Email já existe: ${createUserDto.email}`);
       throw new ConflictException('Falha no registro de Usuário');
     }
     
+    this.logger.log('Criando novo usuário no repositório');
     const user = this.usersRepository.create(createUserDto);
-    return await this.usersRepository.save(user);
+    
+    try {
+      const savedUser = await this.usersRepository.save(user);
+      this.logger.log(`Usuário salvo com sucesso: ID ${savedUser.id}`);
+      return savedUser;
+    } catch (error) {
+      this.logger.error(`Erro ao salvar usuário: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 
   async findAll(): Promise<User[]> {
