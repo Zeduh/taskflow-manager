@@ -5,16 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/auth.context';
 import Link from 'next/link';
 import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  Paper,
-  useTheme,
-  useMediaQuery,
+  Box, TextField, Button, Typography, Alert, Paper,
+  useTheme, useMediaQuery,
 } from '@mui/material';
-import { AuthService } from '@/app/services/auth.service';
+import { loginUser } from './actions';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,11 +26,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await AuthService.login({ email, password });
-      login(response.access_token, response.user);
-      router.push('/dashboard');
+      const result = await loginUser({ email, password });
+      
+      if (result.success && result.data) {
+        login(result.data.access_token, result.data.user);
+        router.push('/dashboard');
+      } else {
+        setError(result.error || 'Erro ao fazer login');
+      }
     } catch (err) {
-      setError('Email ou senha inválidos');
+      setError('Erro ao fazer login');
     } finally {
       setLoading(false);
     }
