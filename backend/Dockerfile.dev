@@ -16,8 +16,9 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
 
-# Instalar dependências
-RUN npm install
+# Limpar cache do npm e instalar dependências
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps
 
 # Copiar o resto dos arquivos
 COPY . .
